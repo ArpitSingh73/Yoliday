@@ -3,7 +3,7 @@ import os
 import psycopg2
 from datetime import datetime
 from fastapi import FastAPI
-from fastapi import Form
+from fastapi import Form, Body
 from dotenv import load_dotenv
 
 load_dotenv(".env")
@@ -22,28 +22,20 @@ def generate_responses(query: str):
 
 @app.post("/generate")
 def generate(
-    user_id: str = Form(...),
-    query: str = Form(...),
+    query: str = Body(...),
+    tone: str = Body(...),
+    user_id: str = Body(...)
 ):
     try:
         casual, formal = generate_responses(query)
-        print("Casual response:", casual)
-        print("Formal response:", formal)
-        print(os.environ.get("POSTGRES_USER"))
-        host = os.environ.get("POSTGRES_HOST")
-        dbname = os.environ.get("POSTGRES_DB")
-        user = os.environ.get("POSTGRES_USER")
-        password = os.environ.get("POSTGRES_PASSWORD")
-        port = os.environ.get("POSTGRES_PORT")
-        print(host, dbname, user, password, port)
         conn = psycopg2.connect(
-            host=host,
-            dbname=dbname,
-            user=user,
-            password=password,
-            port=port,
+            host=os.environ.get("POSTGRES_HOST"),
+            dbname= os.environ.get("POSTGRES_DB"),
+            user=os.environ.get("POSTGRES_USER"),
+            password=os.environ.get("POSTGRES_PASSWORD"),
+            port=os.environ.get("POSTGRES_PORT"),
+             
         )
-        print("111111")
         cur = conn.cursor()
         id = uuid.uuid4()
         query = "Explain blockchain"
@@ -66,12 +58,7 @@ def generate(
         return {"casual_response": casual, "formal_response": formal}
     except Exception as e:
         print(f"Error: {e}")
-        return {"error": "An error occurred while generating responses."}
-    # finally:
-    #     if cur:
-    #         cur.close()
-    #     if conn:
-    #         conn.close()
+        return {"error": "An error occurred while generating responses."} 
 
 
 @app.get("/history")
@@ -87,7 +74,7 @@ def get_history(user_id: str):
             port=os.environ.get("POSTGRES_PORT"),
         )
         cur = conn.cursor()
-        cur.execute("""SELECT * FROM user_chats WHERE id = %s""", (user_id,))
+        cur.execute("""SELECT casual_response, formal_response FROM user_chats WHERE user_id = %s""", (user_id,))
         prompts = cur.fetchall()
         print("history ------ ", prompts)
         cur.close()
