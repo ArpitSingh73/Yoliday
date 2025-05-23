@@ -35,17 +35,6 @@ def call_history_api(user_id):
         print(f"Error: {e}")
         return f"Error: {e}", ""
 
-
-# history = [
-#     { "query": "Explain blockchain", "response1": "Here's a simple explanation of blockchain...", "response2": "A blockchain is a distributed ledger technology..."},
-#     {  "query": "What is AI?", "response1": "AI is the simulation of human intelligence in machines.", "response2": "Artificial Intelligence refers to the capability of a machine to imitate intelligent human behavior."},
-#     {  "query": "What is Python?", "response1": "Python is a high-level programming language.", "response2": "Python is an interpreted, high-level, general-purpose programming language."},
-#     ]
-
-
-# Here you can implement the logic to fetch and display the history of queries and responses
-
-
 st.title("AI Response Generator")
 
 tone = st.selectbox(
@@ -55,20 +44,19 @@ user_input = st.text_input("Enter your query here:")
 
 user_id = st.text_input("Enter your user ID:")
 
-if st.button("Generate"):
-    response1, response2 = call_generate_api(user_input, tone, user_id)
-    st.subheader("AI Response 1")
-    st.write(response1)
-    st.subheader("AI Response 2")
-    st.write(response2)
-    # history.append({"query": user_input, "response1": response1, "response2": response2})
-
-    # Display the query history
-    with st.sidebar.expander("Query History", expanded=True):
-        st.write("This is the query history section.")
-        history = call_history_api(user_id)
-        print(history)
-        for i, (response1, response2) in enumerate(history, start=1):
-            st.write(f"Response 1: {response1}")
-            st.write(f"Response 2: {response2}")
-            st.write("---")
+if tone and user_id and user_input:
+    if st.button("Generate"):
+        response1, response2 = call_generate_api(user_input, tone, user_id)
+        st.subheader("Casual Response ")
+        st.write(response1)
+        st.subheader("Formal Response ")
+        st.write(response2)
+    
+        # Display the query history
+        with st.sidebar.expander("Query History", expanded=True):
+            st.write("This is the query history section.")
+            history = call_history_api(user_id)
+            for i, (response1, response2) in enumerate(history, start=1):
+                st.write(f"Casual Response: {response1}")
+                st.write(f"Formal Response: {response2}")
+                st.write("---")

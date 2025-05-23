@@ -13,7 +13,6 @@ def get_chat_history(user_id):
         cur = conn.cursor()
         cur.execute("""SELECT casual_response, formal_response FROM user_chats WHERE user_id = %s""", (user_id,))
         prompts = cur.fetchall()
-        print("history ------ ", prompts)
         cur.close()
         return prompts
     except Exception as error:

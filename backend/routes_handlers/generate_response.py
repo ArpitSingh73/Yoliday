@@ -9,6 +9,7 @@ load_dotenv(".env")
 
 def generate_user_response(user_query: str, answer_type: str):
     try:
+        print(f"Generating response for query: {user_query} with answer type: {answer_type}")
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
         model = genai.GenerativeModel(
             model_name=os.environ.get("GEMINI_MODEL"),
