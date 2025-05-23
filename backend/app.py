@@ -40,9 +40,9 @@ def generate(
         )
         cur = conn.cursor()
         id = uuid.uuid4()
-        query = "Explain blockchain"
-        casual_response = "Here's a simple explanation of blockchain..."
-        formal_response = "A blockchain is a distributed ledger technology..."
+        query = str(query)
+        casual_response = str(casual)
+        formal_response = str(formal)
         created_at = datetime.now()
 
         insert_query = """
