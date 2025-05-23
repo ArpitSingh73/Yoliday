@@ -5,7 +5,8 @@ from datetime import datetime
 from fastapi import FastAPI
 from fastapi import Form, Body
 from dotenv import load_dotenv
-
+from routes_handlers.get_history import get_chat_history
+from routes_handlers.generate_response import generate_user_response
 load_dotenv(".env")
 
 
@@ -27,7 +28,8 @@ def generate(
     user_id: str = Body(...)
 ):
     try:
-        casual, formal = generate_responses(query)
+        # casual, formal = generate_responses(query)
+        casual, formal = generate_user_response(query, tone)
         conn = psycopg2.connect(
             host=os.environ.get("POSTGRES_HOST"),
             dbname= os.environ.get("POSTGRES_DB"),
@@ -64,21 +66,8 @@ def generate(
 @app.get("/history")
 def get_history(user_id: str):
 
-    # connect to the PostgreSQL server
     try:
-        conn = psycopg2.connect(
-            host=os.environ.get("POSTGRES_HOST"),
-            dbname=os.environ.get("POSTGRES_DB"),
-            user=os.environ.get("POSTGRES_USER"),
-            password=os.environ.get("POSTGRES_PASSWORD"),
-            port=os.environ.get("POSTGRES_PORT"),
-        )
-        cur = conn.cursor()
-        cur.execute("""SELECT casual_response, formal_response FROM user_chats WHERE user_id = %s""", (user_id,))
-        prompts = cur.fetchall()
-        print("history ------ ", prompts)
-        cur.close()
-        return prompts
+        return get_chat_history(user_id)
     except Exception as error:
         print(f"problem while connecting to database: {error}")
         return {
